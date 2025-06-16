@@ -1,48 +1,123 @@
-<section class="bg-light py-5 min-vh-100">
+<section class=" py-5 min-vh-100">
   <div class="container">
+
+    <div class="row justify-content-center text-center mb-3">
+      <div class="col-12 mb-2" *ngFor="let data of  fields" (click)="getWorkFlow(data.Title)">
+        <button type="button" class="btn btn-primary">{{data.Title}}</button>
+      </div>
+    </div>
+
+
     <div class="row justify-content-center">
       <div class="col-lg-8 col-md-10">
-        <div class="card">
+        <div class="card mb-3" *ngFor="let workflow of arrayData?.Workflows">
+          <div class="card-header">
+            <h4 class="mb-0">{{ workflow.WorkflowName }}</h4>
+          </div>
           <div class="card-body">
-            <form [formGroup]="form" (ngSubmit)="onSubmit()">
-              <div *ngFor="let field of fields">
-                <div *ngIf="field.Action === 'Input'" class="mb-3">
-                  <label class="form-label fw-semibold">{{ field.Display_Name }}</label>
+            <form *ngIf="formMap[workflow.WorkflowName]" [formGroup]="formMap[workflow.WorkflowName]">
+              <div *ngFor="let field of workflow.Parameters">
+                <div *ngIf="field.ParameterType === 'Input'" class="mb-3">
+                  <label class="form-label fw-semibold">{{ field.DisplayName }}</label>
 
-                  <!-- TEXT -->
-                  <input *ngIf="field.Data_Type === 'string'" class="form-control"
-                    [formControlName]="field.Variable_Name" [placeholder]="field.Place_Holder" type="text"
-                    [readonly]="!field.Editable" />
+                  <ng-container [ngSwitch]="field.DataType">
+                    <!-- STRING -->
+                    <ng-container *ngSwitchCase="'String'">
+                      <input class="form-control" [formControlName]="field.VariableName" [ngClass]="{
+            'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+              formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+          }" [placeholder]="field.DisplayName" type="text" [readonly]="field.Validation?.Editable === false" />
+                    </ng-container>
 
-                  <!-- NUMBER -->
-                  <input *ngIf="field.Data_Type === 'double' || field.Data_Type === 'int'" class="form-control"
-                    [formControlName]="field.Variable_Name" [placeholder]="field.Place_Holder" type="number"
-                    [readonly]="!field.Editable" />
+                    <!-- NUMBER -->
+                    <ng-container *ngSwitchCase="'Int'">
+                      <input class="form-control" type="number" [formControlName]="field.VariableName" [ngClass]="{
+            'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+              formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+          }" [placeholder]="field.DisplayName" [readonly]="field.Validation?.Editable === false" />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'Double'">
+                      <input class="form-control" type="number" step="any" [formControlName]="field.VariableName"
+                        [ngClass]="{
+            'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+              formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+          }" [placeholder]="field.DisplayName" [readonly]="field.Validation?.Editable === false" />
+                    </ng-container>
 
-                  <!-- DATETIME -->
-                  <input *ngIf="field.Data_Type === 'datetime'" class="form-control"
-                    [formControlName]="field.Variable_Name" type="datetime-local" [readonly]="!field.Editable" />
+                    <!-- DATETIME -->
+                    <ng-container *ngSwitchCase="'Datetime'">
+                      <input class="form-control" type="datetime-local" [formControlName]="field.VariableName"
+                        [ngClass]="{
+            'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+              formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+          }" [readonly]="field.Validation?.Editable === false" />
+                    </ng-container>
 
-                  <!-- ENUM -->
-                  <select *ngIf="field.Data_Type === 'enum'" class="form-select" [formControlName]="field.Variable_Name"
-                    [disabled]="!field.Editable">
-                    <option *ngFor="let opt of field.Options" [value]="opt">{{ opt }}</option>
-                  </select>
+                    <!-- ENUM -->
+                    <ng-container *ngSwitchCase="'Enum'">
+                      <select class="form-select" [formControlName]="field.VariableName" [ngClass]="{
+            'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+              formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+          }" [disabled]="field.Validation?.Editable === false">
+                        <option *ngFor="let opt of field.Options" [value]="opt.Value">{{ opt.Label }}</option>
+                      </select>
+                    </ng-container>
 
+                    <!-- BOOL -->
+                    <ng-container *ngSwitchCase="'Bool'">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" [formControlName]="field.VariableName"
+                          [ngClass]="{
+              'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+                formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+            }" [disabled]="field.Validation?.Editable === false" />
+                        <label class="form-check-label">{{ field.DisplayName }}</label>
+                      </div>
+                    </ng-container>
+                  </ng-container>
 
-                  <!-- BOOLEAN -->
-                  <div *ngIf="field.Data_Type === 'bool'" class="form-check">
-                    <input class="form-check-input" type="checkbox" [formControlName]="field.Variable_Name"
-                      [disabled]="!field.Editable" />
-                    <label class="form-check-label">{{ field.Place_Holder }}</label>
+                  <!-- 🛠 Unified Error Block (only one will show) -->
+                  <div class="validation-error text-danger mt-1" *ngIf="
+        formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
+        formMap[workflow.WorkflowName].get(field.VariableName)?.touched
+      ">
+                    <ng-container [ngSwitch]="true">
+                      <div *ngSwitchCase="
+            formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('required')
+          ">
+                        {{ field.DisplayName }} is required.
+                      </div>
+                      <div *ngSwitchCase="
+            formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('min')
+          ">
+                        Minimum value is {{ field.Validation?.MinValue }}.
+                      </div>
+                      <div *ngSwitchCase="
+            formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('max')
+          ">
+                        Maximum value is {{ field.Validation?.MaxValue }}.
+                      </div>
+                      <div *ngSwitchCase="
+            formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('minlength')
+          ">
+                        Minimum length is {{ field.Validation?.MinLength }}.
+                      </div>
+                      <div *ngSwitchCase="
+            formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('maxlength')
+          ">
+                        Maximum length is {{ field.Validation?.MaxLength }}.
+                      </div>
+                    </ng-container>
                   </div>
-
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary mt-3">Submit</button>
+
             </form>
           </div>
+        </div>
+        <div class="text-center">
+          <button type="button" class="btn btn-primary mt-3 w-50 " (click)="SaveForm()">Calculate</button>
         </div>
       </div>
     </div>

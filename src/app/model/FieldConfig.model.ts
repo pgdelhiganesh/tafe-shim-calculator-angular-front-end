@@ -14,4 +14,5 @@ export interface FieldConfig {
     Required: boolean;
     Editable: boolean;
     Expression?: string | null;
+    Title:any
 }
