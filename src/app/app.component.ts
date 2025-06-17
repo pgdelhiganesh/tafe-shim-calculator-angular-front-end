@@ -14,13 +14,14 @@ import { log } from 'node:console';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
- public title = 'shim_calculator';
+  public title = 'shim_calculator';
 
- public fields: any[] = [];                    // Complete JSON array
- public arrayData: any;                        // Selected item’s object
- public formMap: Record<string, FormGroup> = {};  // Map of WorkflowName → FormGroup
- public selectedForm!: FormGroup  // Selected form group
- public currentCalTitle: any;
+  public fields: any[] = [];                    // Complete JSON array
+  public arrayData: any;                        // Selected item’s object
+  public formMap: Record<string, FormGroup> = {};  // Map of WorkflowName → FormGroup
+  public selectedForm!: FormGroup  // Selected form group
+  public currentCalTitle: any;
+  EvaluationMessage: any;
 
   constructor(private fb: FormBuilder, private service: ApiService) { }
 
@@ -38,6 +39,13 @@ export class AppComponent {
   }
 
   IsShow = false;
+  backButton() {
+    this.IsShow = false
+  }
+
+  resetForm(){
+    this.selectedForm.reset();
+  }
 
   getWorkFlow(title: string) {
     this.IsShow = true;
@@ -127,7 +135,9 @@ export class AppComponent {
     if (this.selectedForm.valid) {
       this.service.post(dataToSend).subscribe({
         next: (res: any) => {
-          alert('✅ Successfully sent');
+          if (res.EvaluationMessage != null) {
+            this.EvaluationMessage = res.EvaluationMessage
+          }
           console.log('✅ Response:', res);
 
           // ✅ Now update form with output values
