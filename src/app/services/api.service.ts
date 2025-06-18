@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -7,7 +9,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  public baseUrl ='http://localhost:5298/api'
+  public readonly baseUrl =environment.baseUrl;
 
   get() {
     return this.http.get(`${this.baseUrl}/Workflows/all`)

@@ -135,23 +135,22 @@ export class AppComponent {
     if (this.selectedForm.valid) {
       this.service.post(dataToSend).subscribe({
         next: (res: any) => {
-          if (res.EvaluationMessage != null) {
-            this.EvaluationMessage = res.EvaluationMessage
-          }
+          this.EvaluationMessage = res.EvaluationMessage
           console.log('✅ Response:', res);
 
-          // ✅ Now update form with output values
-          const updated = res?.Workflows?.[0];
-          const form = this.formMap[updated.WorkflowName];
+          // ✅ Loop through all workflows in the response
+          for (const updatedWorkflow of res.Workflows) {
+            const form = this.formMap[updatedWorkflow.WorkflowName];
 
-          updated.Parameters.forEach((param: any) => {
-            if (param.ParameterType === 'Output') {
-              const ctrl = form.get(param.VariableName);
-              if (ctrl) {
-                ctrl.setValue(param.ResultValue);
+            updatedWorkflow.Parameters.forEach((param: any) => {
+              if (param.ParameterType === 'Output') {
+                const ctrl = form.get(param.VariableName);
+                if (ctrl) {
+                  ctrl.setValue(param.ResultValue);
+                }
               }
-            }
-          });
+            });
+          }
         },
         error: (err) => {
           alert('❌ Failed to send');
