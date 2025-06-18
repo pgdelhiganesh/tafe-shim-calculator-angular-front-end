@@ -8,22 +8,21 @@
 
 
     <div *ngIf="IsShow" class="row justify-content-center">
-      <div class="d-flex align-items-center justify-content-center bg-primary mb-2">
-        <h3 class="mb-0 p-2 text-white">{{currentCalTitle}}</h3>
+      <div class="d-flex align-items-center justify-content-between bg-white border-bottom mb-2 p-2">
+        <button class="btn btn-sm btn-primary" (click)="backButton()">Home</button>
+        <h6 class="mb-0 p-2 text-primary">{{currentCalTitle}}</h6>
+        <button class="btn btn-sm btn-danger" (click)="buildForms()">Reset</button>
       </div>
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <button class="btn btn-primary" (click)="backButton()" >Home</button>
-        <button class="btn btn-danger" (click)="buildForms()">Reset</button>
-      </div>
-      <div class="row">
-        <div class="col-lg-6 col-12 card mb-3" *ngFor="let workflow of arrayData?.Workflows">
+    
+      <div class="row justify-content-center">
+        <div class="col-md-6  col-lg-6 col-12 card mb-1" *ngFor="let workflow of arrayData?.Workflows">
           <div class="card-header ">
-            <h5 class="mb-0">{{ workflow.WorkflowName }}</h5>
+            <h6 class="mb-0">{{ workflow.WorkflowName }}</h6>
           </div>
           <div class="card-body">
             <form *ngIf="formMap[workflow.WorkflowName]" [formGroup]="formMap[workflow.WorkflowName]">
               <div *ngFor="let field of workflow.Parameters">
-                <div *ngIf="field.ParameterType === 'Input' || field.ParameterType === 'Output'" class="mb-3">
+                <div *ngIf="field.ParameterType === 'Input' || field.ParameterType === 'Output'" class="mb-1">
                   <label class="form-label fw-semibold">{{ field.DisplayName }}</label>
 
                   <ng-container [ngSwitch]="field.DataType">
@@ -34,7 +33,7 @@
                       'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
                                    formMap[workflow.WorkflowName].get(field.VariableName)?.touched,
                       'boreder-green': field.ParameterType === 'Output'
-                    }"  />
+                    }" />
                     </ng-container>
 
                     <!-- Int -->
@@ -44,7 +43,7 @@
                       'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
                                    formMap[workflow.WorkflowName].get(field.VariableName)?.touched,
                       'boreder-green': field.ParameterType === 'Output'
-                    }"  />
+                    }" />
                     </ng-container>
 
                     <!-- Double -->
@@ -54,7 +53,7 @@
                       'is-invalid': formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
                                    formMap[workflow.WorkflowName].get(field.VariableName)?.touched,
                       'boreder-green': field.ParameterType === 'Output'
-                    }"  />
+                    }" />
                     </ng-container>
 
                     <!-- Datetime -->
@@ -92,16 +91,16 @@
                        formMap[workflow.WorkflowName].get(field.VariableName)?.invalid &&
                        formMap[workflow.WorkflowName].get(field.VariableName)?.touched">
                     <ng-container [ngSwitch]="true">
-                      <div *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('required')">
+                      <div class="alert-msg" *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('required')">
                         {{ field.DisplayName }} is required.
                       </div>
-                      <div *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('min')">
+                      <div class="alert-msg" *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('min')">
                         Minimum value is {{ field.Validation?.MinValue }}.
                       </div>
-                      <div *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('max')">
+                      <div class="alert-msg" *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('max')">
                         Maximum value is {{ field.Validation?.MaxValue }}.
                       </div>
-                      <div
+                      <div class="alert-msg"
                         *ngSwitchCase="formMap[workflow.WorkflowName].get(field.VariableName)?.hasError('minlength')">
                         Minimum length is {{ field.Validation?.MinLength }}.
                       </div>
