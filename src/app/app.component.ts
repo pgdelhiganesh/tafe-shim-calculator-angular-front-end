@@ -106,7 +106,6 @@ export class AppComponent {
     return parameters.find(p => p.ParameterType === 'Output' && p.VariableName === outputName);
   }
 
-
   SaveForm() {
     let allFormsValid = true;
 

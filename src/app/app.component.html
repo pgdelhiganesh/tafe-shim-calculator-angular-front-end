@@ -1,6 +1,7 @@
 <section class=" min-vh-100">
   <div class="container">
     <div *ngIf="!IsShow" class="py-5 row justify-content-center text-center mb-3">
+      <h4>Select a Workflow</h4>
       <div class="col-12 mb-2" *ngFor="let data of fields" (click)="getWorkFlow(data.Title)">
         <button type="button" class="btn btn-primary">{{ data.Title }}</button>
       </div>
@@ -15,11 +16,11 @@
       </div>
     
       <div class="row justify-content-center">
-        <div class="col-md-6  col-lg-6 col-12 card mb-1" *ngFor="let workflow of arrayData?.Workflows">
-          <div class="card-header ">
+        <div class="col-md-6  col-lg-6 col-12 card mb-1" style="border: 2px solid #ccc;" *ngFor="let workflow of arrayData?.Workflows">
+          <div class="card-header">
             <h6 class="mb-0">{{ workflow.WorkflowName }}</h6>
           </div>
-          <div class="card-body">
+          <div class="card-body m-0 p-1">
             <form *ngIf="formMap[workflow.WorkflowName]" [formGroup]="formMap[workflow.WorkflowName]">
               <div *ngFor="let field of workflow.Parameters">
                 <div *ngIf="field.ParameterType === 'Input' || field.ParameterType === 'Output'" class="mb-1">
@@ -55,7 +56,7 @@
                       'boreder-green': field.ParameterType === 'Output'
                     }" />
                     </ng-container>
-
+                    
                     <!-- Datetime -->
                     <ng-container *ngSwitchCase="'Datetime'">
                       <input class="form-control" type="datetime-local" [formControlName]="field.VariableName"
@@ -117,7 +118,7 @@
         </div>
 
         <div class="text-center">
-          <button type="button" class="btn btn-primary mt-3 w-50" (click)="SaveForm()">
+          <button type="button" class="btn btn-primary mt-1 w-50" (click)="SaveForm()">
             Calculate
           </button>
         </div>
